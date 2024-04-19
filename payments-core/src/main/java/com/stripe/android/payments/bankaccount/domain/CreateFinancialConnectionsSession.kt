@@ -81,7 +81,8 @@ internal class CreateFinancialConnectionsSession @Inject constructor(
         customerId: String?,
         onBehalfOf: String?,
         amount: Int?,
-        currency: String?
+        currency: String?,
+        product: String?,
     ): Result<FinancialConnectionsSession> {
         return stripeRepository.createFinancialConnectionsSessionForDeferredPayments(
             params = CreateFinancialConnectionsSessionForDeferredPaymentParams(
@@ -90,7 +91,8 @@ internal class CreateFinancialConnectionsSession @Inject constructor(
                 customer = customerId,
                 onBehalfOf = onBehalfOf,
                 amount = amount,
-                currency = currency
+                currency = currency,
+                product = product,
             ),
             requestOptions = ApiRequest.Options(
                 publishableKey,

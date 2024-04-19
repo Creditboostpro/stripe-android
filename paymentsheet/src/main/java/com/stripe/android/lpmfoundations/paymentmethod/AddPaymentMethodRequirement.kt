@@ -63,9 +63,9 @@ internal enum class AddPaymentMethodRequirement {
             val paymentMethodTypes = metadata.stripeIntent.paymentMethodTypes
             val noUsBankAccount = USBankAccount.code !in paymentMethodTypes
             val supportsBankAccounts = "bank_account" in metadata.stripeIntent.linkFundingSources
-            val isDeferred = metadata.stripeIntent.clientSecret == null
+//            val isDeferred = metadata.stripeIntent.clientSecret == null
             val isEnabled = FeatureFlags.instantDebits.isEnabled
-            return noUsBankAccount && supportsBankAccounts && !isDeferred && isEnabled
+            return noUsBankAccount && supportsBankAccounts && isEnabled
         }
     };
 

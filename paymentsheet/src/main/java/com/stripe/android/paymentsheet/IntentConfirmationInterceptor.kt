@@ -241,10 +241,22 @@ internal class DefaultIntentConfirmationInterceptor @Inject constructor(
     private suspend fun createPaymentMethod(
         params: PaymentMethodCreateParams,
     ): Result<PaymentMethod> {
-        return stripeRepository.createPaymentMethod(
-            paymentMethodCreateParams = params,
-            options = requestOptions,
-        )
+        val instantDebitsPaymentMethodId = params.instantDebitsPaymentMethodId()
+
+        return if (instantDebitsPaymentMethodId != null) {
+            Result.success(
+                PaymentMethod.Builder()
+                    .setId(instantDebitsPaymentMethodId)
+                    .setCode(PaymentMethod.Type.Link.code)
+                    .setType(PaymentMethod.Type.Link)
+                    .build()
+            )
+        } else {
+            stripeRepository.createPaymentMethod(
+                paymentMethodCreateParams = params,
+                options = requestOptions,
+            )
+        }
     }
 
     private suspend fun handleDeferredIntentCreationFromPaymentMethod(

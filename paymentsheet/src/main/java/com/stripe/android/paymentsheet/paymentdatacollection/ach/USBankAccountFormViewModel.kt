@@ -332,7 +332,7 @@ internal class USBankAccountFormViewModel @Inject internal constructor(
                 resultIdentifier = ResultIdentifier.PaymentMethod(result.paymentMethodId),
                 bankName = result.bankName,
                 last4 = result.last4,
-                intentId = result.intent.id,
+                intentId = result.intent?.id,
                 primaryButtonText = buildPrimaryButtonText(),
                 mandateText = buildMandateText(),
             )
@@ -502,14 +502,22 @@ internal class USBankAccountFormViewModel @Inject internal constructor(
     private fun collectBankAccountForDeferredIntent() {
         val elementsSessionId = args.stripeIntentId ?: return
 
+        val configuration = if (args.instantDebits) {
+            CollectBankAccountConfiguration.InstantDebits(
+                email = email.value,
+            )
+        } else {
+            CollectBankAccountConfiguration.USBankAccount(
+                name = name.value,
+                email = email.value,
+            )
+        }
+
         if (args.isPaymentFlow) {
             collectBankAccountLauncher?.presentWithDeferredPayment(
                 publishableKey = lazyPaymentConfig.get().publishableKey,
                 stripeAccountId = lazyPaymentConfig.get().stripeAccountId,
-                configuration = CollectBankAccountConfiguration.USBankAccount(
-                    name.value,
-                    email.value
-                ),
+                configuration = configuration,
                 elementsSessionId = elementsSessionId,
                 customerId = null,
                 onBehalfOf = args.onBehalfOf,
@@ -520,10 +528,7 @@ internal class USBankAccountFormViewModel @Inject internal constructor(
             collectBankAccountLauncher?.presentWithDeferredSetup(
                 publishableKey = lazyPaymentConfig.get().publishableKey,
                 stripeAccountId = lazyPaymentConfig.get().stripeAccountId,
-                configuration = CollectBankAccountConfiguration.USBankAccount(
-                    name.value,
-                    email.value
-                ),
+                configuration = configuration,
                 elementsSessionId = elementsSessionId,
                 customerId = null,
                 onBehalfOf = args.onBehalfOf,

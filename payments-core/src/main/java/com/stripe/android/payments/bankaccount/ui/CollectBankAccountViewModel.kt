@@ -67,7 +67,8 @@ internal class CollectBankAccountViewModel @Inject constructor(
                     customerId = args.customerId,
                     onBehalfOf = args.onBehalfOf,
                     amount = args.amount,
-                    currency = args.currency
+                    currency = args.currency,
+                    product = args.configuration.product,
                 )
 
             is CollectBankAccountContract.Args.ForDeferredSetupIntent ->
@@ -78,7 +79,8 @@ internal class CollectBankAccountViewModel @Inject constructor(
                     customerId = args.customerId,
                     onBehalfOf = args.onBehalfOf,
                     amount = null,
-                    currency = null
+                    currency = null,
+                    product = args.configuration.product,
                 )
 
             is CollectBankAccountContract.Args.ForPaymentIntent ->

@@ -14,7 +14,7 @@ sealed interface CollectBankAccountForInstantDebitsResult : Parcelable {
     @Parcelize
     @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
     data class Completed(
-        val intent: StripeIntent,
+        val intent: StripeIntent?,
         val paymentMethodId: String,
         val last4: String?,
         val bankName: String?
@@ -39,12 +39,6 @@ internal fun CollectBankAccountResultInternal.toInstantDebitsResult(): CollectBa
 
         is CollectBankAccountResultInternal.Completed -> {
             when {
-                response.intent == null -> {
-                    CollectBankAccountForInstantDebitsResult.Failed(
-                        IllegalArgumentException("StripeIntent not set for this session")
-                    )
-                }
-
                 response.instantDebitsData == null -> {
                     CollectBankAccountForInstantDebitsResult.Failed(
                         IllegalArgumentException("instant debits data cannot be null")

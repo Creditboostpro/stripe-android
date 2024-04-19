@@ -5,13 +5,13 @@ import androidx.annotation.RestrictTo
 @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
 data class CreateFinancialConnectionsSessionForDeferredPaymentParams(
     val uniqueId: String,
+    val product: String?,
     val initialInstitution: String? = null,
     val manualEntryOnly: Boolean? = null,
     val searchSession: String? = null,
     val verificationMethod: VerificationMethodParam? = null,
     val customer: String? = null,
     val onBehalfOf: String? = null,
-
     // PaymentIntent only params
     val amount: Int? = null,
     val currency: String? = null,
@@ -26,7 +26,8 @@ data class CreateFinancialConnectionsSessionForDeferredPaymentParams(
             PARAM_CUSTOMER to customer,
             PARAM_ON_BEHALF_OF to onBehalfOf,
             PARAM_AMOUNT to amount,
-            PARAM_CURRENCY to currency
+            PARAM_CURRENCY to currency,
+            PARAM_PRODUCT to product,
         )
     }
 
@@ -40,6 +41,7 @@ data class CreateFinancialConnectionsSessionForDeferredPaymentParams(
         const val PARAM_ON_BEHALF_OF = "on_behalf_of"
         const val PARAM_AMOUNT = "amount"
         const val PARAM_CURRENCY = "currency"
+        const val PARAM_PRODUCT = "product"
     }
 }
 
