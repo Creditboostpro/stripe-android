@@ -65,8 +65,10 @@ internal fun createLinkActivityResult(resultCode: Int, intent: Intent?): LinkAct
             val redirectUri = intent?.data ?: return LinkActivityResult.Canceled()
             when (redirectUri.getQueryParameter("link_status")) {
                 "complete" -> {
-                    val paymentMethod = redirectUri.getQueryParameter("pm")
-                        ?.parsePaymentMethod()
+                    val encodedPaymentMethod = redirectUri.getQueryParameter("pm")
+                    val paymentMethod = encodedPaymentMethod?.let {
+                        PaymentMethodJsonParser.parseEncodedPaymentMethod(it)
+                    }
                     if (paymentMethod == null) {
                         LinkActivityResult.Canceled()
                     } else {
