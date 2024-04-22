@@ -1,5 +1,6 @@
 package com.stripe.android.model.parsers
 
+import android.util.Base64
 import androidx.annotation.RestrictTo
 import com.stripe.android.core.model.StripeJsonUtils
 import com.stripe.android.core.model.parsers.ModelJsonParser
@@ -371,12 +372,20 @@ class PaymentMethodJsonParser : ModelJsonParser<PaymentMethod> {
         }
     }
 
-    private companion object {
+    @RestrictTo(RestrictTo.Scope.LIBRARY)
+    companion object {
         private const val FIELD_ID = "id"
         private const val FIELD_BILLING_DETAILS = "billing_details"
         private const val FIELD_CREATED = "created"
         private const val FIELD_CUSTOMER = "customer"
         private const val FIELD_LIVEMODE = "livemode"
         private const val FIELD_TYPE = "type"
+
+        fun parseEncodedPaymentMethod(input: String): PaymentMethod? {
+            return runCatching {
+                val decodedPaymentMethod = String(Base64.decode(input, 0), Charsets.UTF_8)
+                PaymentMethodJsonParser().parse(JSONObject(decodedPaymentMethod))
+            }.getOrNull()
+        }
     }
 }

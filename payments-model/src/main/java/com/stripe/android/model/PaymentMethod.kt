@@ -20,7 +20,7 @@ typealias PaymentMethodCode = String
  * Related guides: [Payment Methods](https://stripe.com/docs/payments/payment-methods) and
  * [More Payment Scenarios](https://stripe.com/docs/payments/more-payment-scenarios).
  *
- * See [PaymentMethodCreateParams] for PaymentMethod creation
+ * See [com.stripe.android.model.PaymentMethodCreateParams] for PaymentMethod creation
  */
 @Parcelize
 data class PaymentMethod
