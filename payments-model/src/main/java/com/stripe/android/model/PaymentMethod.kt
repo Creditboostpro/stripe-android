@@ -53,7 +53,7 @@ constructor(
      *
      * [livemode](https://stripe.com/docs/api/payment_methods/object#payment_method_object-type)
      */
-    @JvmField internal val code: PaymentMethodCode?,
+    @JvmField @field:RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val code: PaymentMethodCode?,
 
     /**
      * The type of the PaymentMethod. An additional hash is included on the PaymentMethod with a
@@ -167,7 +167,7 @@ constructor(
         @JvmField val isVoucher: Boolean,
         @JvmField val requiresMandate: Boolean,
         private val hasDelayedSettlement: Boolean,
-        internal val shouldRefreshIfIntentRequiresAction: Boolean,
+        @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP) val shouldRefreshIfIntentRequiresAction: Boolean,
     ) : Parcelable {
         Link(
             "link",
@@ -682,11 +682,12 @@ constructor(
             }
         }
 
-        internal companion object {
-            internal const val PARAM_ADDRESS = "address"
-            internal const val PARAM_EMAIL = "email"
-            internal const val PARAM_NAME = "name"
-            internal const val PARAM_PHONE = "phone"
+        @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+        companion object {
+            const val PARAM_ADDRESS = "address"
+            const val PARAM_EMAIL = "email"
+            const val PARAM_NAME = "name"
+            const val PARAM_PHONE = "phone"
 
             fun create(shippingInformation: ShippingInformation): BillingDetails {
                 return BillingDetails(
