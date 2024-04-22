@@ -19,6 +19,9 @@ import com.stripe.android.financialconnections.FinancialConnectionsSheetState.Au
 import com.stripe.android.financialconnections.FinancialConnectionsSheetViewEffect.FinishWithResult
 import com.stripe.android.financialconnections.FinancialConnectionsSheetViewEffect.OpenAuthFlowWithUrl
 import com.stripe.android.financialconnections.FinancialConnectionsSheetViewEffect.OpenNativeAuthFlow
+import com.stripe.android.financialconnections.FinancialConnectionsSheetViewModel.Companion.QUERY_BANK_NAME
+import com.stripe.android.financialconnections.FinancialConnectionsSheetViewModel.Companion.QUERY_PARAM_LAST4
+import com.stripe.android.financialconnections.FinancialConnectionsSheetViewModel.Companion.QUERY_PARAM_PAYMENT_METHOD
 import com.stripe.android.financialconnections.analytics.FinancialConnectionsAnalyticsTracker
 import com.stripe.android.financialconnections.analytics.FinancialConnectionsEvent.ErrorCode
 import com.stripe.android.financialconnections.analytics.FinancialConnectionsEvent.Metadata
@@ -53,6 +56,7 @@ import com.stripe.android.financialconnections.navigation.topappbar.TopAppBarSta
 import com.stripe.android.financialconnections.presentation.FinancialConnectionsViewModel
 import com.stripe.android.financialconnections.ui.FinancialConnectionsSheetNativeActivity
 import com.stripe.android.financialconnections.utils.parcelable
+import com.stripe.android.model.PaymentMethod
 import com.stripe.android.model.parsers.PaymentMethodJsonParser
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
@@ -441,8 +445,7 @@ internal class FinancialConnectionsSheetViewModel @Inject constructor(
 
     private fun onSuccessFromInstantDebits(url: Uri) {
         runCatching {
-            val parameter = requireNotNull(url.getQueryParameter(QUERY_PARAM_PAYMENT_METHOD))
-            requireNotNull(PaymentMethodJsonParser.parseEncodedPaymentMethod(parameter))
+            url.parseInstantDebitsPayload()
         }.onSuccess { paymentMethod ->
             withState {
                 finishWithResult(
@@ -533,4 +536,20 @@ internal class FinancialConnectionsSheetViewModel @Inject constructor(
     override fun updateTopAppBar(state: FinancialConnectionsSheetState): TopAppBarStateUpdate? {
         return null
     }
+}
+
+private data class InstantDebitsPayload(
+    val paymentMethod: PaymentMethod,
+    val bankName: String?,
+    val last4: String?,
+)
+
+private fun Uri.parseInstantDebitsPayload(): InstantDebitsPayload {
+    val encodedPM = requireNotNull(getQueryParameter(QUERY_PARAM_PAYMENT_METHOD))
+    val paymentMethod = requireNotNull(PaymentMethodJsonParser.parseEncodedPaymentMethod(encodedPM))
+    return InstantDebitsPayload(
+        paymentMethod = paymentMethod,
+        bankName = getQueryParameter(QUERY_BANK_NAME),
+        last4 = getQueryParameter(QUERY_PARAM_LAST4),
+    )
 }
