@@ -192,7 +192,7 @@ private fun LayoutScaffold(
                 // Loading pill if things take too long
                 LoadingPillContainer(
                     canShowPill = loading,
-                    modifier = Modifier.padding(bottom = 24.dp),
+                    modifier = Modifier.padding(bottom = 16.dp),
                 )
             }
         }
