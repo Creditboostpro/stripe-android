@@ -18,6 +18,7 @@ import com.stripe.android.financialconnections.domain.ConfirmVerification
 import com.stripe.android.financialconnections.domain.GetCachedAccounts
 import com.stripe.android.financialconnections.domain.GetOrFetchSync
 import com.stripe.android.financialconnections.domain.LookupConsumerAndStartVerification
+import com.stripe.android.financialconnections.domain.LookupConsumerAndStartVerification.Result
 import com.stripe.android.financialconnections.domain.MarkLinkStepUpVerified
 import com.stripe.android.financialconnections.domain.NativeAuthFlowCoordinator
 import com.stripe.android.financialconnections.domain.SelectNetworkedAccounts
@@ -79,28 +80,31 @@ internal class LinkStepUpVerificationViewModel @AssistedInject constructor(
         .onFailure { setState { copy(payload = Fail(it)) } }
         .onSuccess { manifest ->
             setState { copy(payload = Loading()) }
-            lookupConsumerAndStartVerification(
+
+            val result = lookupConsumerAndStartVerification(
                 email = requireNotNull(manifest.accountholderCustomerEmailAddress),
                 businessName = manifest.businessName,
                 verificationType = VerificationType.EMAIL,
-                onConsumerNotFound = {
+            )
+
+            when (result) {
+                is Result.ConsumerNotFound -> {
                     eventTracker.track(VerificationStepUpError(PANE, ConsumerNotFoundError))
                     navigationManager.tryNavigateTo(InstitutionPicker(referrer = PANE))
-                },
-                onLookupError = { error ->
-                    eventTracker.track(VerificationStepUpError(PANE, LookupConsumerSession))
-                    setState { copy(payload = Fail(error)) }
-                },
-                onStartVerification = { /* no-op */ },
-                onVerificationStarted = { consumerSession ->
-                    val payload = buildPayload(consumerSession)
-                    setState { copy(payload = Success(payload)) }
-                },
-                onStartVerificationError = { error ->
-                    eventTracker.track(VerificationStepUpError(PANE, StartVerificationError))
-                    setState { copy(payload = Fail(error)) }
                 }
-            )
+                is Result.LookupError -> {
+                    eventTracker.track(VerificationStepUpError(PANE, LookupConsumerSession))
+                    setState { copy(payload = Fail(result.error)) }
+                }
+                is Result.VerificationError -> {
+                    eventTracker.track(VerificationStepUpError(PANE, StartVerificationError))
+                    setState { copy(payload = Fail(result.error)) }
+                }
+                is Result.Success -> {
+                    val payload = buildPayload(result.consumerSession)
+                    setState { copy(payload = Success(payload)) }
+                }
+            }
         }
 
     private fun buildPayload(consumerSession: ConsumerSession) = Payload(
@@ -190,25 +194,30 @@ internal class LinkStepUpVerificationViewModel @AssistedInject constructor(
         .onFailure { setState { copy(resendOtp = Fail(it)) } }
         .onSuccess { manifest ->
             setState { copy(resendOtp = Loading()) }
-            lookupConsumerAndStartVerification(
+
+            val result = lookupConsumerAndStartVerification(
                 email = requireNotNull(manifest.accountholderCustomerEmailAddress),
                 businessName = manifest.businessName,
                 verificationType = VerificationType.EMAIL,
-                onConsumerNotFound = {
+            )
+
+            when (result) {
+                is Result.ConsumerNotFound -> {
                     eventTracker.track(VerificationStepUpError(PANE, ConsumerNotFoundError))
                     navigationManager.tryNavigateTo(InstitutionPicker(referrer = PANE))
-                },
-                onLookupError = { error ->
-                    eventTracker.track(VerificationStepUpError(PANE, LookupConsumerSession))
-                    setState { copy(resendOtp = Fail(error)) }
-                },
-                onStartVerification = { /* no-op */ },
-                onVerificationStarted = { setState { copy(resendOtp = Success(Unit)) } },
-                onStartVerificationError = { error ->
-                    eventTracker.track(VerificationStepUpError(PANE, StartVerificationError))
-                    setState { copy(resendOtp = Fail(error)) }
                 }
-            )
+                is Result.LookupError -> {
+                    eventTracker.track(VerificationStepUpError(PANE, LookupConsumerSession))
+                    setState { copy(resendOtp = Fail(result.error)) }
+                }
+                is Result.VerificationError -> {
+                    eventTracker.track(VerificationStepUpError(PANE, StartVerificationError))
+                    setState { copy(resendOtp = Fail(result.error)) }
+                }
+                is Result.Success -> {
+                    setState { copy(resendOtp = Success(Unit)) }
+                }
+            }
         }
 
     @AssistedFactory
