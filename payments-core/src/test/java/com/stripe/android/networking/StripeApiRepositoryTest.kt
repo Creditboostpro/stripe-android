@@ -8,10 +8,12 @@ import com.stripe.android.FakeFraudDetectionDataRepository
 import com.stripe.android.FileFactory
 import com.stripe.android.FinancialConnectionsFixtures
 import com.stripe.android.FraudDetectionDataFixtures
-import com.stripe.android.FraudDetectionDataRepository
+import com.stripe.android.core.frauddetection.FraudDetectionDataRepository
 import com.stripe.android.Stripe
 import com.stripe.android.core.exception.APIConnectionException
 import com.stripe.android.core.exception.InvalidRequestException
+import com.stripe.android.core.frauddetection.FraudDetectionData
+import com.stripe.android.core.frauddetection.FraudDetectionDataParamsUtils
 import com.stripe.android.core.model.StripeFileParams
 import com.stripe.android.core.model.StripeFilePurpose
 import com.stripe.android.core.networking.AnalyticsRequest

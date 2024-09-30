@@ -1,7 +1,7 @@
 package com.stripe.android
 
 import com.google.common.truth.Truth.assertThat
-import com.stripe.android.networking.FraudDetectionData
+import com.stripe.android.core.frauddetection.FraudDetectionData
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 import kotlin.test.Test

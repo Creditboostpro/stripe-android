@@ -1,25 +1,18 @@
-package com.stripe.android
+package com.stripe.android.core.frauddetection
 
-import android.content.Context
 import androidx.annotation.RestrictTo
 import com.stripe.android.core.exception.StripeException
-import com.stripe.android.core.networking.DefaultStripeNetworkClient
 import com.stripe.android.core.networking.StripeNetworkClient
 import com.stripe.android.core.networking.StripeResponse
 import com.stripe.android.core.networking.responseJson
-import com.stripe.android.model.parsers.FraudDetectionDataJsonParser
-import com.stripe.android.networking.DefaultFraudDetectionDataRequestFactory
-import com.stripe.android.networking.FraudDetectionData
-import com.stripe.android.networking.FraudDetectionDataRequestFactory
-import com.stripe.android.payments.core.analytics.ErrorReporter
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Calendar
 import kotlin.coroutines.CoroutineContext
 
-internal interface FraudDetectionDataRepository {
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+interface FraudDetectionDataRepository {
     fun refresh()
 
     /**
@@ -47,29 +40,27 @@ fun interface FraudDetectionErrorReporter {
     fun reportError(error: StripeException)
 }
 
-internal class DefaultFraudDetectionDataRepository(
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+fun interface FraudDetectionEnabledProvider {
+    fun provideFraudDetectionEnabled(): Boolean
+}
+
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+class DefaultFraudDetectionDataRepository(
     private val localStore: FraudDetectionDataStore,
     private val fraudDetectionDataRequestFactory: FraudDetectionDataRequestFactory,
     private val stripeNetworkClient: StripeNetworkClient,
     private val errorReporter: FraudDetectionErrorReporter,
     private val workContext: CoroutineContext,
+    private val fraudDetectionEnabledProvider: FraudDetectionEnabledProvider,
 ) : FraudDetectionDataRepository {
     private var cachedFraudDetectionData: FraudDetectionData? = null
 
-    @JvmOverloads
-    constructor(
-        context: Context,
-        workContext: CoroutineContext = Dispatchers.IO
-    ) : this(
-        localStore = DefaultFraudDetectionDataStore(context, workContext),
-        fraudDetectionDataRequestFactory = DefaultFraudDetectionDataRequestFactory(context),
-        stripeNetworkClient = DefaultStripeNetworkClient(workContext = workContext),
-        errorReporter = ErrorReporter.createFallbackInstance(context, emptySet()),
-        workContext = workContext
-    )
+    private val fraudDetectionEnabled: Boolean
+        get() = fraudDetectionEnabledProvider.provideFraudDetectionEnabled()
 
     override fun refresh() {
-        if (Stripe.advancedFraudSignalsEnabled) {
+        if (fraudDetectionEnabled) {
             CoroutineScope(workContext).launch {
                 getLatest()
             }
@@ -106,7 +97,7 @@ internal class DefaultFraudDetectionDataRepository(
 
     override fun getCached(): FraudDetectionData? {
         return cachedFraudDetectionData.takeIf {
-            Stripe.advancedFraudSignalsEnabled
+            fraudDetectionEnabled
         }
     }
 

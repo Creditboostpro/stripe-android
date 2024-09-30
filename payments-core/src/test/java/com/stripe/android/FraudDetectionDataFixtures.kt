@@ -1,6 +1,6 @@
 package com.stripe.android
 
-import com.stripe.android.networking.FraudDetectionData
+import com.stripe.android.core.frauddetection.FraudDetectionData
 import java.util.UUID
 
 internal object FraudDetectionDataFixtures {

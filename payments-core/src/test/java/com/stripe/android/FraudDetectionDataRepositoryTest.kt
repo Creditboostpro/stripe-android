@@ -4,11 +4,14 @@ import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
 import com.stripe.android.core.exception.APIConnectionException
+import com.stripe.android.core.frauddetection.DefaultFraudDetectionDataRepository
+import com.stripe.android.core.frauddetection.DefaultFraudDetectionDataStore
+import com.stripe.android.core.frauddetection.FraudDetectionDataStore
 import com.stripe.android.core.networking.StripeNetworkClient
 import com.stripe.android.core.networking.StripeResponse
-import com.stripe.android.networking.DefaultFraudDetectionDataRequestFactory
-import com.stripe.android.networking.FraudDetectionData
-import com.stripe.android.networking.FraudDetectionDataRequestFactory
+import com.stripe.android.core.frauddetection.DefaultFraudDetectionDataRequestFactory
+import com.stripe.android.core.frauddetection.FraudDetectionData
+import com.stripe.android.core.frauddetection.FraudDetectionDataRequestFactory
 import com.stripe.android.payments.core.analytics.ErrorReporter
 import com.stripe.android.testing.FakeErrorReporter
 import kotlinx.coroutines.test.UnconfinedTestDispatcher

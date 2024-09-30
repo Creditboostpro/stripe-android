@@ -4,6 +4,8 @@ import android.os.Build
 import androidx.test.core.app.ApplicationProvider
 import com.google.common.truth.Truth.assertThat
 import com.stripe.android.FraudDetectionDataFixtures
+import com.stripe.android.core.frauddetection.FraudDetectionDataRequest
+import com.stripe.android.core.frauddetection.FraudDetectionDataRequestParamsFactory
 import com.stripe.android.core.networking.HEADER_CONTENT_TYPE
 import com.stripe.android.core.networking.HEADER_X_STRIPE_USER_AGENT
 import com.stripe.android.core.networking.RequestHeadersFactory

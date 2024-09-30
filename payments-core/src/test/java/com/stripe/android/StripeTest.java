@@ -10,6 +10,7 @@ import com.stripe.android.core.AppInfo;
 import com.stripe.android.core.exception.AuthenticationException;
 import com.stripe.android.core.exception.InvalidRequestException;
 import com.stripe.android.core.exception.StripeException;
+import com.stripe.android.core.frauddetection.FraudDetectionDataRepository;
 import com.stripe.android.core.model.StripeFile;
 import com.stripe.android.core.model.StripeFileParams;
 import com.stripe.android.core.model.StripeFilePurpose;
