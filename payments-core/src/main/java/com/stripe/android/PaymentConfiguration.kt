@@ -100,7 +100,8 @@ constructor(
                     stripeAccountId = stripeAccountId
                 )
 
-            DefaultFraudDetectionDataRepository(context).refresh()
+            val fraudDataRepository = PaymentsFraudDetectionDataRepositoryFactory.create(context)
+            fraudDataRepository.refresh()
         }
 
         @RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)

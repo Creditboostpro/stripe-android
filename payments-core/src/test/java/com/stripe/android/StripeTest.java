@@ -90,7 +90,7 @@ public class StripeTest {
     private final Context context = ApplicationProvider.getApplicationContext();
     @NonNull
     private final FraudDetectionDataRepository defaultFraudDetectionDataRepository =
-            new DefaultFraudDetectionDataRepository(context);
+            PaymentsFraudDetectionDataRepositoryFactory.INSTANCE.create(context);
     @NonNull
     private final Stripe defaultStripe = createStripe();
 

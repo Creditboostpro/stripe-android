@@ -1,6 +1,7 @@
 package com.stripe.android
 
 import android.content.Context
+import androidx.annotation.RestrictTo
 import com.stripe.android.core.exception.StripeException
 import com.stripe.android.core.networking.DefaultStripeNetworkClient
 import com.stripe.android.core.networking.StripeNetworkClient
@@ -41,11 +42,16 @@ private val timestampSupplier: () -> Long = {
     Calendar.getInstance().timeInMillis
 }
 
+@RestrictTo(RestrictTo.Scope.LIBRARY_GROUP)
+fun interface FraudDetectionErrorReporter {
+    fun reportError(error: StripeException)
+}
+
 internal class DefaultFraudDetectionDataRepository(
     private val localStore: FraudDetectionDataStore,
     private val fraudDetectionDataRequestFactory: FraudDetectionDataRequestFactory,
     private val stripeNetworkClient: StripeNetworkClient,
-    private val errorReporter: ErrorReporter,
+    private val errorReporter: FraudDetectionErrorReporter,
     private val workContext: CoroutineContext,
 ) : FraudDetectionDataRepository {
     private var cachedFraudDetectionData: FraudDetectionData? = null
@@ -83,10 +89,8 @@ internal class DefaultFraudDetectionDataRepository(
                         )
                     ).fraudDetectionData()
                 }.onFailure {
-                    errorReporter.report(
-                        ErrorReporter.ExpectedErrorEvent.FRAUD_DETECTION_API_FAILURE,
-                        StripeException.create(it)
-                    )
+                    val error = StripeException.create(it)
+                    errorReporter.reportError(error)
                 }.getOrNull()
             } else {
                 localFraudDetectionData

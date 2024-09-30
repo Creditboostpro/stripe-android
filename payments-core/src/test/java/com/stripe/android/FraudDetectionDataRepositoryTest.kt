@@ -40,7 +40,7 @@ class FraudDetectionDataRepositoryTest {
     @Test
     fun `save() ➡ refresh() ➡ get() should return original object`() {
         val expectedFraudDetectionData = createFraudDetectionData(elapsedTime = -5L)
-        val repository = DefaultFraudDetectionDataRepository(context)
+        val repository = PaymentsFraudDetectionDataRepositoryFactory.create(context)
         repository.save(expectedFraudDetectionData)
         repository.refresh()
         assertThat(repository.getCached())
